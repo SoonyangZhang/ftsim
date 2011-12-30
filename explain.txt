@@ -1,0 +1,7 @@
+command:
+   cat out.txt | perl delay.pl
+
+output:
+0.041721503125	0.89523653625798	6308	15	5469	640	4883270
+   ^average delay   ^average loss        ^total #pkts    ^#received pkts ^#bytes
+                                                ^total #signal   ^#dropped

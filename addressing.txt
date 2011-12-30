@@ -1,0 +1,57 @@
+Addressing scheme in the Fat Tree topology
+------------------------------------------
+
+There are four types of nodes (class ftnode) in the fat tree network (class
+fattree), namely host, edge, aggregation and core. Each node has one or more
+ports (class ftport or class rlport). Each port bears a 32-bit unsigned
+integer as its address. In the fat-tree network, we assume the switch
+components are homogeneous with 2N ports. That is, for example, each edge
+switch connects to N hosts and N aggregation switches. Here we assign
+      n = log_2 (N-1)
+
+The addressing scheme is as follows: For the ports that connects between
+host, edge and aggregation, they are of 5 segments:
+
+Address           Scheme
+               | (n+1)-bit | 1-bit | n-bit | 2-bit | n-bit |
+Host ports        Pod ID       0    Edge ID   00    Host ID
+
+Agg. ports        Pod ID       0    Edge ID   01    Agg. ID
+(towards edge)
+
+Edge ports        Pod ID       0    Edge ID   11    Agg. ID
+(towards agg.)
+
+Edge ports        Pod ID       0    Edge ID   10    Host ID
+(towards host)
+
+
+The Host ID is counting from zero onward and unique within an edge switch. The
+Edge and Aggregation ID are also counting from zero onward and unique within an
+pod. The Pod ID is counting from zero onward and unique to the whole network.
+
+The addressing scheme for the ports that connects between the aggregation and
+core switches are of 5 segments:
+
+Address           Scheme
+               | (n+1)-bit | 1-bit | 2-bit | n-bit | n-bit |
+Agg. ports        Pod ID       1      00    Agg. ID Core ID
+(towards core)
+
+Core ports        Pod ID       1      01    Core ID Agg. ID
+(towards agg.)
+
+The Aggregation ID is same as the one abovementioned. The core switches are
+grouped into N groups and numbered with ID from zero to N-1 in each group. This
+means the aggregation switch of ID j connects to all the N core switches in
+group j, and core switches in group j connects to the aggregation switches of
+ID j in all pods. Since core switches do not belongs to any pods, the pod ID in
+the above correspond to the pod of the aggregation switch concerned.
+
+The addressing scheme above creates an address of (3n+4)-bit for each port. The
+address is prefixed with zeros to make up the 32-bit.
+
+As an example, the i-th host connected to the j-th edge switch in the k-th pod
+bears the address that can be constructed by:
+        int n = log2(N-1);
+	unsigned address = (((((((k<<1)+0)<<n)+j)<<2)+0)<<n)+i;
